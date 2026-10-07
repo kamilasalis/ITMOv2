@@ -37,6 +37,9 @@
         },
         "anthropic/claude-sonnet-4": {
           "name": "anthropic/claude-sonnet-4"
+        },
+	"google/gemini-3.8-flash": {
+          "name": "gemini"
         }
       }
     }
