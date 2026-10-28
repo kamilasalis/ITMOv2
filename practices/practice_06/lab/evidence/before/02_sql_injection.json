@@ -1,0 +1,50 @@
+[
+  {
+    "request": {
+      "method": "GET",
+      "path": "/profile?id=1 OR 1=1"
+    },
+    "status": 200,
+    "result": [
+      {
+        "id": 1,
+        "name": "TEST_ALICE",
+        "email": "alice@example.invalid",
+        "address": "TEST_ADDRESS_A"
+      },
+      {
+        "id": 2,
+        "name": "TEST_BOB",
+        "email": "bob@example.invalid",
+        "address": "TEST_ADDRESS_B"
+      }
+    ]
+  },
+  {
+    "request": {
+      "method": "GET",
+      "path": "/search?q=UNION..."
+    },
+    "status": 200,
+    "result": [
+      {
+        "id": 1,
+        "name": "3.37.2",
+        "email": 3,
+        "address": 4
+      },
+      {
+        "id": 1,
+        "name": "TEST_ALICE",
+        "email": "alice@example.invalid",
+        "address": "TEST_ADDRESS_A"
+      },
+      {
+        "id": 2,
+        "name": "TEST_BOB",
+        "email": "bob@example.invalid",
+        "address": "TEST_ADDRESS_B"
+      }
+    ]
+  }
+]

@@ -1,0 +1,34 @@
+test_health_and_not_found (test_http.HttpTest) ... ok
+test_login_and_purchase_over_http (test_http.HttpTest) ... ok
+test_transport_only_binds_loopback (test_http.HttpTest) ... ok
+test_admin_export_requires_real_staff_session_not_role_header (test_security.SecurityTest) ... ok
+test_assistant_context_does_not_inline_unmoderated_review_text (test_security.SecurityTest) ... ok
+test_assistant_context_is_scoped_to_callers_own_order (test_security.SecurityTest) ... ok
+test_assistant_execute_delete_tree_requires_authorization (test_security.SecurityTest) ... ok
+test_debug_logs_requires_staff_authentication (test_security.SecurityTest) ... ok
+test_files_cannot_escape_to_private_directory (test_security.SecurityTest) ... ok
+test_files_cannot_read_other_users_receipt (test_security.SecurityTest) ... ok
+test_order_price_is_server_controlled (test_security.SecurityTest) ... ok
+test_orders_list_is_scoped_to_caller (test_security.SecurityTest) ... ok
+test_orders_missing_product_is_a_validation_error_not_a_crash (test_security.SecurityTest) ... ok
+test_profile_id_is_not_sql_injectable (test_security.SecurityTest) ... ok
+test_reviews_missing_text_is_a_validation_error_not_a_crash (test_security.SecurityTest) ... ok
+test_search_query_is_not_sql_injectable (test_security.SecurityTest) ... ok
+test_delete_of_fixture_root_stays_inside_exercise (test_service.SandboxTest) ... ok
+test_external_directory_cannot_be_deleted (test_service.SandboxTest) ... ok
+test_parent_paths_cannot_escape_exercise (test_service.SandboxTest) ... ok
+test_symlink_cannot_escape_exercise (test_service.SandboxTest) ... ok
+test_assistant_can_return_own_receipt (test_service.ShopTest) ... ok
+test_customer_can_buy_at_catalog_price (test_service.ShopTest) ... ok
+test_health_and_catalog (test_service.ShopTest) ... ok
+test_own_profile_and_receipt (test_service.ShopTest) ... ok
+test_review_can_be_submitted_and_viewed (test_service.ShopTest) ... ok
+test_staff_can_export_with_staff_session (test_service.ShopTest) ... ok
+test_tokens_identify_distinct_users (test_service.ShopTest) ... ok
+test_unknown_product_rejected (test_service.ShopTest) ... ok
+test_wrong_password_rejected (test_service.ShopTest) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 0.550s
+
+OK
