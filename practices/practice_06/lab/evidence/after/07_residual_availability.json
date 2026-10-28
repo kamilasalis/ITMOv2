@@ -1,0 +1,45 @@
+[
+  {
+    "group": "07",
+    "kind": "residual",
+    "case": "300 wrong-password logins throttled?",
+    "ok": false,
+    "result": {
+      "status_counts": {
+        "401": 300
+      }
+    },
+    "note": "no rate limit / lockout"
+  },
+  {
+    "group": "07",
+    "kind": "residual",
+    "case": "1000 orders by one customer limited?",
+    "ok": false,
+    "result": {
+      "created": 1000
+    },
+    "note": "no per-user quota"
+  },
+  {
+    "group": "07",
+    "kind": "residual",
+    "case": "2000 reviews by one customer limited?",
+    "ok": false,
+    "result": {
+      "created": 2000,
+      "post_secs": 0.01,
+      "context_secs": 0.0001
+    },
+    "note": "reviews list is unbounded in memory"
+  },
+  {
+    "group": "07",
+    "kind": "residual",
+    "case": "old token still valid after re-login (no expiry/logout)",
+    "ok": false,
+    "result": {
+      "status": 200
+    }
+  }
+]
