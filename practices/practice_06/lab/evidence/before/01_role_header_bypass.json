@@ -1,0 +1,24 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/admin/export",
+    "headers": {
+      "X-Role": "staff"
+    }
+  },
+  "status": 200,
+  "result": [
+    {
+      "id": 1,
+      "name": "TEST_ALICE",
+      "email": "alice@example.invalid",
+      "address": "TEST_ADDRESS_A"
+    },
+    {
+      "id": 2,
+      "name": "TEST_BOB",
+      "email": "bob@example.invalid",
+      "address": "TEST_ADDRESS_B"
+    }
+  ]
+}

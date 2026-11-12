@@ -1,0 +1,625 @@
+[
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /profile?id='1 OR 1=1'",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=1%20OR%201=1",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 400,
+    "result": {
+      "error": "id must be a positive integer"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /profile?id='1+OR+1=1'",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=1+OR+1=1",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 400,
+    "result": {
+      "error": "id must be a positive integer"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /profile?id='1/**/OR/**/1=1'",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=1/**/OR/**/1=1",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 400,
+    "result": {
+      "error": "id must be a positive integer"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /profile?id='2'",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=2",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 403,
+    "result": {
+      "error": "access denied"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /profile?id='1;DROP TABLE profiles'",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=1%3BDROP%20TABLE%20profiles",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 400,
+    "result": {
+      "error": "id must be a positive integer"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /profile?id='1 UNION SELECT 1,2,3,4'",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=1%20UNION%20SELECT%201%2C2%2C3%2C4",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 400,
+    "result": {
+      "error": "id must be a positive integer"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /profile?id='-1'",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=-1",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 400,
+    "result": {
+      "error": "id must be a positive integer"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /profile?id='1.0'",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=1.0",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 400,
+    "result": {
+      "error": "id must be a positive integer"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /profile?id='0x1'",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=0x1",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 400,
+    "result": {
+      "error": "id must be a positive integer"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /profile?id='1\\n'",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=1%0A",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 200,
+    "result": [
+      {
+        "id": 1,
+        "name": "TEST_ALICE",
+        "email": "alice@example.invalid",
+        "address": "TEST_ADDRESS_A"
+      }
+    ],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /profile?id='1%0a'",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=1%0a",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 200,
+    "result": [
+      {
+        "id": 1,
+        "name": "TEST_ALICE",
+        "email": "alice@example.invalid",
+        "address": "TEST_ADDRESS_A"
+      }
+    ],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /profile?id='١'",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=%D9%A1",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 400,
+    "result": {
+      "error": "id must be a positive integer"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /profile?id='1&id=2'",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=1&id=2",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 200,
+    "result": [
+      {
+        "id": 1,
+        "name": "TEST_ALICE",
+        "email": "alice@example.invalid",
+        "address": "TEST_ADDRESS_A"
+      }
+    ],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /profile?id='99999999999'",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=99999999999",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 400,
+    "result": {
+      "error": "id must be a positive integer"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /profile?id=\"' OR '1'='1\"",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=%27%20OR%20%271%27=%271",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 400,
+    "result": {
+      "error": "id must be a positive integer"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /profile?id='1) OR (1=1'",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=1%29%20OR%20%281=1",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 400,
+    "result": {
+      "error": "id must be a positive integer"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /profile?id='2 AND 1=1'",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=2%20AND%201=1",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 400,
+    "result": {
+      "error": "id must be a positive integer"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "ORIGINAL: unauth /profile?id=1 OR 1=1",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=1 OR 1=1",
+      "body": null,
+      "auth": null
+    },
+    "status": 401,
+    "result": {
+      "error": "login required"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "bob reads id=1",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=1",
+      "body": null,
+      "auth": "bob"
+    },
+    "status": 403,
+    "result": {
+      "error": "access denied"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /search?q=\"%' UNION SELECT 1,sqlite_version(),3,4--\"",
+    "request": {
+      "method": "GET",
+      "target": "/search?q=%25%27%20UNION%20SELECT%201%2Csqlite_version%28%29%2C3%2C4--",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 200,
+    "result": [],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /search?q=\"' OR '1'='1\"",
+    "request": {
+      "method": "GET",
+      "target": "/search?q=%27%20OR%20%271%27%3D%271",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 200,
+    "result": [],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /search?q='%'",
+    "request": {
+      "method": "GET",
+      "target": "/search?q=%25",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 200,
+    "result": [],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /search?q='_'",
+    "request": {
+      "method": "GET",
+      "target": "/search?q=_",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 200,
+    "result": [
+      {
+        "id": 1,
+        "name": "TEST_ALICE",
+        "email": "alice@example.invalid",
+        "address": "TEST_ADDRESS_A"
+      }
+    ],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /search?q='\\\\'",
+    "request": {
+      "method": "GET",
+      "target": "/search?q=%5C",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 200,
+    "result": [],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /search?q=\"' UNION SELECT 1,sql,3,4 FROM sqlite_master--\"",
+    "request": {
+      "method": "GET",
+      "target": "/search?q=%27%20UNION%20SELECT%201%2Csql%2C3%2C4%20FROM%20sqlite_master--",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 200,
+    "result": [],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /search?q=\"x%' AND 1=0 UNION SELECT id,email,address,name FROM profiles--\"",
+    "request": {
+      "method": "GET",
+      "target": "/search?q=x%25%27%20AND%201%3D0%20UNION%20SELECT%20id%2Cemail%2Caddress%2Cname%20FROM%20profiles--",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 200,
+    "result": [],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /search?q='BOB'",
+    "request": {
+      "method": "GET",
+      "target": "/search?q=BOB",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 200,
+    "result": [],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /search?q='\\x00'",
+    "request": {
+      "method": "GET",
+      "target": "/search?q=%00",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 200,
+    "result": [
+      {
+        "id": 1,
+        "name": "TEST_ALICE",
+        "email": "alice@example.invalid",
+        "address": "TEST_ADDRESS_A"
+      }
+    ],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "alice /search?q=\"'; DROP TABLE profiles;--\"",
+    "request": {
+      "method": "GET",
+      "target": "/search?q=%27%3B%20DROP%20TABLE%20profiles%3B--",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 200,
+    "result": [],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "ORIGINAL: unauth /search UNION",
+    "request": {
+      "method": "GET",
+      "target": "/search?q=%25%27%20UNION%20SELECT%201%2Csqlite_version%28%29%2C3%2C4--",
+      "body": null,
+      "auth": null
+    },
+    "status": 401,
+    "result": {
+      "error": "login required"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "staff /search UNION (parameterised -> literal text, expect no rows)",
+    "request": {
+      "method": "GET",
+      "target": "/search?q=%25%27%20UNION%20SELECT%201%2Csqlite_version%28%29%2C3%2C4--",
+      "body": null,
+      "auth": "staff"
+    },
+    "status": 200,
+    "result": [],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "attack",
+    "case": "q 65 chars",
+    "request": {
+      "method": "GET",
+      "target": "/search?q=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 400,
+    "result": {
+      "error": "q must be at most 64 characters"
+    },
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "control",
+    "case": "CONTROL: alice /profile (no id) -> own",
+    "request": {
+      "method": "GET",
+      "target": "/profile",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 200,
+    "result": [
+      {
+        "id": 1,
+        "name": "TEST_ALICE",
+        "email": "alice@example.invalid",
+        "address": "TEST_ADDRESS_A"
+      }
+    ],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "control",
+    "case": "CONTROL: staff /profile?id=2",
+    "request": {
+      "method": "GET",
+      "target": "/profile?id=2",
+      "body": null,
+      "auth": "staff"
+    },
+    "status": 200,
+    "result": [
+      {
+        "id": 2,
+        "name": "TEST_BOB",
+        "email": "bob@example.invalid",
+        "address": "TEST_ADDRESS_B"
+      }
+    ],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "control",
+    "case": "CONTROL: staff /search?q=TEST -> 2 rows",
+    "request": {
+      "method": "GET",
+      "target": "/search?q=TEST",
+      "body": null,
+      "auth": "staff"
+    },
+    "status": 200,
+    "result": [
+      {
+        "id": 1,
+        "name": "TEST_ALICE",
+        "email": "alice@example.invalid",
+        "address": "TEST_ADDRESS_A"
+      },
+      {
+        "id": 2,
+        "name": "TEST_BOB",
+        "email": "bob@example.invalid",
+        "address": "TEST_ADDRESS_B"
+      }
+    ],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "control",
+    "case": "CONTROL: alice /search?q=TEST_ALICE (literal underscore)",
+    "request": {
+      "method": "GET",
+      "target": "/search?q=TEST_ALICE",
+      "body": null,
+      "auth": "alice"
+    },
+    "status": 200,
+    "result": [
+      {
+        "id": 1,
+        "name": "TEST_ALICE",
+        "email": "alice@example.invalid",
+        "address": "TEST_ADDRESS_A"
+      }
+    ],
+    "ok": true
+  },
+  {
+    "group": "02",
+    "kind": "control",
+    "case": "tables still exist after injection attempts",
+    "result": [
+      {
+        "name": "profiles"
+      },
+      {
+        "name": "orders"
+      }
+    ],
+    "ok": true
+  }
+]

@@ -1,0 +1,1 @@
+NO MODEL OUTPUT. Fallback `claude -p` exited with code 1: "claude: claude is not enabled in this environment" (see 05_stderr_before.txt). Not retried, per instructions.

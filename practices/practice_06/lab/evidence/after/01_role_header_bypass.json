@@ -1,0 +1,572 @@
+[
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "ORIGINAL: X-Role staff, no token",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "X-Role": "staff"
+      }
+    },
+    "status": 401,
+    "result": {
+      "error": "login required"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "lowercase header x-role",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "x-role": "staff"
+      }
+    },
+    "status": 401,
+    "result": {
+      "error": "login required"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "X-Role: STAFF",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "X-Role": "STAFF"
+      }
+    },
+    "status": 401,
+    "result": {
+      "error": "login required"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "X-Role as list",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "X-Role": [
+          "staff"
+        ]
+      }
+    },
+    "status": 401,
+    "result": {
+      "error": "login required"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "alice token + X-Role staff",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "X-Token": "16937388fd0b4ea09acee94400dea642",
+        "X-Role": "staff"
+      }
+    },
+    "status": 403,
+    "result": {
+      "error": "access denied"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "bob token + X-Role staff",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "X-Token": "146b6f87426a4809b86278ac50670460",
+        "X-Role": "staff"
+      }
+    },
+    "status": 403,
+    "result": {
+      "error": "access denied"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "forged/odd X-Token='learn-staff'",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "X-Token": "learn-staff"
+      }
+    },
+    "status": 401,
+    "result": {
+      "error": "login required"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "forged/odd X-Token='staff'",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "X-Token": "staff"
+      }
+    },
+    "status": 401,
+    "result": {
+      "error": "login required"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "forged/odd X-Token=''",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "X-Token": ""
+      }
+    },
+    "status": 401,
+    "result": {
+      "error": "login required"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "forged/odd X-Token=None",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "X-Token": null
+      }
+    },
+    "status": 401,
+    "result": {
+      "error": "login required"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "forged/odd X-Token=['x']",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "X-Token": [
+          "x"
+        ]
+      }
+    },
+    "status": 401,
+    "result": {
+      "error": "login required"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "forged/odd X-Token={'a': 1}",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "X-Token": {
+          "a": 1
+        }
+      }
+    },
+    "status": 401,
+    "result": {
+      "error": "login required"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "forged/odd X-Token=123",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "X-Token": 123
+      }
+    },
+    "status": 401,
+    "result": {
+      "error": "login required"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "forged/odd X-Token='*'",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "X-Token": "*"
+      }
+    },
+    "status": 401,
+    "result": {
+      "error": "login required"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "forged/odd X-Token='staff-token minus 1 char'",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "X-Token": "02953cba033d4c38a53708cde0e4c61"
+      }
+    },
+    "status": 401,
+    "result": {
+      "error": "login required"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "forged/odd X-Token='02953CBA033D4C38A53708CDE0E4C611'",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "X-Token": "02953CBA033D4C38A53708CDE0E4C611"
+      }
+    },
+    "status": 401,
+    "result": {
+      "error": "login required"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "staff token + wrong-case key x-token (plain dict)",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "x-token": "02953cba033d4c38a53708cde0e4c611"
+      }
+    },
+    "status": 401,
+    "result": {
+      "error": "login required"
+    },
+    "ok": true,
+    "note": "dispatch() with a plain dict is case-sensitive -> fails closed; real HTTP uses case-insensitive HTTPMessage"
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "POST /admin/export (method confusion)",
+    "request": {
+      "method": "POST",
+      "target": "/admin/export",
+      "body": null,
+      "auth": "staff"
+    },
+    "status": 404,
+    "result": {
+      "error": "not found"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "login: username as dict",
+    "request": {
+      "method": "POST",
+      "target": "/login",
+      "body": {
+        "username": {
+          "$ne": 1
+        },
+        "password": "x"
+      },
+      "auth": null
+    },
+    "status": 400,
+    "result": {
+      "error": "username and password are required strings"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "login: username as list",
+    "request": {
+      "method": "POST",
+      "target": "/login",
+      "body": {
+        "username": [
+          "staff"
+        ],
+        "password": "learn-staff"
+      },
+      "auth": null
+    },
+    "status": 400,
+    "result": {
+      "error": "username and password are required strings"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "login: password int",
+    "request": {
+      "method": "POST",
+      "target": "/login",
+      "body": {
+        "username": "alice",
+        "password": 1
+      },
+      "auth": null
+    },
+    "status": 400,
+    "result": {
+      "error": "username and password are required strings"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "login: password None",
+    "request": {
+      "method": "POST",
+      "target": "/login",
+      "body": {
+        "username": "alice",
+        "password": null
+      },
+      "auth": null
+    },
+    "status": 400,
+    "result": {
+      "error": "username and password are required strings"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "login: staff with alice's password",
+    "request": {
+      "method": "POST",
+      "target": "/login",
+      "body": {
+        "username": "staff",
+        "password": "learn-alice"
+      },
+      "auth": null
+    },
+    "status": 401,
+    "result": {
+      "error": "invalid credentials"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "login: 'Staff' / 'staff ' usernames",
+    "request": {
+      "method": "POST",
+      "target": "/login",
+      "body": {
+        "username": "staff ",
+        "password": "learn-staff"
+      },
+      "auth": null
+    },
+    "status": 401,
+    "result": {
+      "error": "invalid credentials"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "login: missing body fields",
+    "request": {
+      "method": "POST",
+      "target": "/login",
+      "body": {},
+      "auth": null
+    },
+    "status": 400,
+    "result": {
+      "error": "username and password are required strings"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "login: body is a list",
+    "request": {
+      "method": "POST",
+      "target": "/login",
+      "body": [],
+      "auth": null
+    },
+    "status": 400,
+    "result": {
+      "error": "request body must be a JSON object"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "login: body is a string",
+    "request": {
+      "method": "POST",
+      "target": "/login",
+      "body": "alice",
+      "auth": null
+    },
+    "status": 400,
+    "result": {
+      "error": "request body must be a JSON object"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "attack",
+    "case": "login: body is None",
+    "request": {
+      "method": "POST",
+      "target": "/login",
+      "body": null,
+      "auth": null
+    },
+    "status": 400,
+    "result": {
+      "error": "request body must be a JSON object"
+    },
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "control",
+    "case": "CONTROL: real staff session",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": "staff"
+    },
+    "status": 200,
+    "result": [
+      {
+        "id": 1,
+        "name": "TEST_ALICE",
+        "email": "alice@example.invalid",
+        "address": "TEST_ADDRESS_A"
+      },
+      {
+        "id": 2,
+        "name": "TEST_BOB",
+        "email": "bob@example.invalid",
+        "address": "TEST_ADDRESS_B"
+      }
+    ],
+    "ok": true
+  },
+  {
+    "group": "01",
+    "kind": "control",
+    "case": "CONTROL: real staff + bogus X-Role customer",
+    "request": {
+      "method": "GET",
+      "target": "/admin/export",
+      "body": null,
+      "auth": {
+        "X-Token": "02953cba033d4c38a53708cde0e4c611",
+        "X-Role": "customer"
+      }
+    },
+    "status": 200,
+    "result": [
+      {
+        "id": 1,
+        "name": "TEST_ALICE",
+        "email": "alice@example.invalid",
+        "address": "TEST_ADDRESS_A"
+      },
+      {
+        "id": 2,
+        "name": "TEST_BOB",
+        "email": "bob@example.invalid",
+        "address": "TEST_ADDRESS_B"
+      }
+    ],
+    "ok": true
+  }
+]

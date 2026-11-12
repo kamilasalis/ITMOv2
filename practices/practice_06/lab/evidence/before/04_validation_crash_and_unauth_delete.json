@@ -1,0 +1,32 @@
+[
+  {
+    "case": "POST /orders without product",
+    "crashed": false
+  },
+  {
+    "case": "POST /orders without product (valid session)",
+    "crashed": true,
+    "exception_type": "KeyError",
+    "exception": "'product'"
+  },
+  {
+    "case": "POST /reviews without text",
+    "crashed": true,
+    "exception_type": "KeyError",
+    "exception": "'text'"
+  },
+  {
+    "case": "/assistant/execute delete_tree without auth wipes entire sandbox",
+    "before_file_read": [
+      200,
+      {
+        "content": "TEST_ALICE receipt: chair, 5000 RUB"
+      }
+    ],
+    "delete_status": 200,
+    "delete_result": {
+      "deleted": "."
+    },
+    "sandbox_root_exists_after": false
+  }
+]

@@ -1,0 +1,79 @@
+[
+  {
+    "case": "alice sees all orders including bob's",
+    "status": 200,
+    "result": [
+      {
+        "id": 1,
+        "owner": 1,
+        "product": "chair",
+        "price": 5000.0
+      },
+      {
+        "id": 2,
+        "owner": 2,
+        "product": "lamp",
+        "price": 1500.0
+      }
+    ]
+  },
+  {
+    "case": "alice buys chair for price=1 (client controls price)",
+    "status": 201,
+    "result": {
+      "id": 3,
+      "owner": 1,
+      "product": "chair",
+      "price": 1
+    }
+  },
+  {
+    "case": "alice reads bob's receipt via /files?user=bob",
+    "status": 200,
+    "result": {
+      "content": "TEST_BOB receipt: lamp, 1500 RUB"
+    }
+  },
+  {
+    "case": "alice reads private/operator-note.txt via path traversal in user param",
+    "status": 200,
+    "result": {
+      "content": "TEST_ONLY_OPERATOR_SECRET"
+    }
+  },
+  {
+    "case": "unauthenticated /debug/logs leaks tokens/headers of prior requests",
+    "status": 200,
+    "result_sample": [
+      {
+        "method": "POST",
+        "target": "/login",
+        "body": {
+          "username": "alice",
+          "password": "learn-alice"
+        },
+        "headers": {}
+      },
+      {
+        "method": "GET",
+        "target": "/orders",
+        "body": {},
+        "headers": {
+          "X-Token": "e48a7e3960074ba9936f508817b8ab19"
+        }
+      },
+      {
+        "method": "POST",
+        "target": "/orders",
+        "body": {
+          "product": "chair",
+          "price": 1
+        },
+        "headers": {
+          "X-Token": "e48a7e3960074ba9936f508817b8ab19"
+        }
+      }
+    ],
+    "contains_alice_token": true
+  }
+]
