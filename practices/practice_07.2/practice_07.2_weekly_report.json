@@ -1,0 +1,435 @@
+{
+  "name": "practice_07.2_weekly_report",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 1"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "78cc52e7-4712-4564-9672-43843d40a15a",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        208
+      ],
+      "id": "83c9f35e-58d1-4f99-973f-c122b190242a",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "const end = $now.setZone('Europe/Moscow').startOf('week');\nconst start = end.minus({ weeks: 1 });\nconst labels = ['bug', 'task', 'feature-request', 'needs-triage'];\n\nreturn labels.map(label => ({\n  json: {\n    label,\n    week_start: start.toISODate(),\n    week_end_exclusive: end.toISODate(),\n    query: [\n      'repo:kamilasalis/ITMOv2',\n      'is:issue',\n      `label:\"${label}\"`,\n      `created:${start.toUTC().toISO({ suppressMilliseconds: true })}..${end.minus({ seconds: 1 }).toUTC().toISO({ suppressMilliseconds: true })}`\n    ].join(' ')\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "51d97bc7-466a-45de-8688-378b9874cd97",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/search/issues",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "=\t{{ $json.query }}"
+            },
+            {
+              "name": "per_page",
+              "value": "100"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        672,
+        0
+      ],
+      "id": "cc628166-09dc-471d-9fda-a7682fe3dd52",
+      "name": "HTTP Request",
+      "credentials": {
+        "githubApi": {
+          "id": "PKcLjl6EpHeJej0h",
+          "name": "GitHub account 66"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const queries = $('Code in JavaScript').all();\nconst responses = $input.all();\nconst byType = {};\nconst authors = new Map();\nconst seenIssues = new Set();\n\nfor (const [index, response] of responses.entries()) {\n  const { label } = queries[index].json;\n  const { items, total_count, incomplete_results } = response.json;\n\n  if (incomplete_results || items.length !== total_count) {\n    throw new Error(`GitHub вернул неполный список для метки ${label}`);\n  }\n\n  byType[label] = items.length;\n\n  for (const issue of items) {\n    if (seenIssues.has(issue.id)) continue;\n    seenIssues.add(issue.id);\n\n    const author = issue.user?.login ?? 'Неизвестный автор';\n    authors.set(author, (authors.get(author) ?? 0) + 1);\n  }\n}\n\nconst { week_start, week_end_exclusive } = queries[0].json;\n\nreturn [{\n  json: {\n    week_start,\n    week_end_exclusive,\n    total_issues: seenIssues.size,\n    by_type: byType,\n    by_author: Object.fromEntries(authors)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        0
+      ],
+      "id": "c9509886-7642-4ce9-9fc9-2382014e17b9",
+      "name": "Group weekly issues"
+    },
+    {
+      "parameters": {
+        "jsCode": "const report = $('Compare weeks').first().json;\nconst ai = $input.first().json;\nconst comment = ai.text ?? ai.output ?? '';\n\nconst lastDay = new Date(`${report.week_end_exclusive}T00:00:00Z`);\nlastDay.setUTCDate(lastDay.getUTCDate() - 1);\n\nconst formatDate = date => date.split('-').reverse().join('.');\nconst period = `${formatDate(report.week_start)} — ${formatDate(lastDay.toISOString().slice(0, 10))}`;\nconst signed = value => value > 0 ? `+${value}` : String(value);\n\nconst escapeHtml = value => String(value)\n  .replaceAll('&', '&amp;')\n  .replaceAll('<', '&lt;')\n  .replaceAll('>', '&gt;');\n\nfunction makeTable(heading, nameColumn, valueColumn, values) {\n  const rows = Object.entries(values)\n    .map(([name, value]) => `<tr><td>${escapeHtml(name)}</td><td>${escapeHtml(value)}</td></tr>`)\n    .join('');\n\n  return `\n    <h3>${heading}</h3>\n    <table border=\"1\" cellpadding=\"6\" cellspacing=\"0\">\n      <tr><th>${nameColumn}</th><th>${valueColumn}</th></tr>\n      ${rows || '<tr><td colspan=\"2\">Нет обращений</td></tr>'}\n    </table>`;\n}\n\nconst comparison = report.delta_total === null\n  ? '<p>Данных за предыдущую неделю пока нет.</p>'\n  : `<p>Общее изменение к прошлой неделе: <strong>${signed(report.delta_total)}</strong></p>\n     ${makeTable('Изменение по типам', 'Тип', 'Δ', Object.fromEntries(\n       Object.entries(report.delta_by_type).map(([type, delta]) => [type, signed(delta)])\n     ))}`;\n\nreturn [{\n  json: {\n    subject: `ITMOv2 — отчёт по Issues за ${period}`,\n    html: `\n      <h2>Еженедельный отчёт по GitHub Issues</h2>\n      <p>Период: ${period}</p>\n      <p>Всего обращений: <strong>${report.total_issues}</strong></p>\n      ${makeTable('По типам', 'Тип', 'Обращений', report.by_type)}\n      ${makeTable('По авторам', 'Автор', 'Обращений', report.by_author)}\n      ${comparison}\n      <h3>AI-комментарий недели</h3>\n      <p>${escapeHtml(comment)}</p>\n    `\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1904,
+        400
+      ],
+      "id": "ae832bdd-ff71-41cb-9e69-0569c8253a4a",
+      "name": "Build weekly email"
+    },
+    {
+      "parameters": {
+        "sendTo": "salyakhovakamila@gmail.com",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2128,
+        400
+      ],
+      "id": "5b2acc7f-3b4e-4284-95ad-2251797b00e6",
+      "name": "Send a message",
+      "webhookId": "176c4f18-1d9b-4a76-a758-1f34828f2361",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "TxBbV6krvUsUycHi",
+          "name": "Gmail account 28"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "value": "CJkWQJcG3wEBKXXv",
+          "mode": "list",
+          "cachedResultName": "weekly_issue_stats",
+          "cachedResultUrl": "/projects/KIYEEocueP0pxQTY/datatables/CJkWQJcG3wEBKXXv"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "week_start",
+              "keyValue": "={{ $json.week_start }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "week_start": "=\t{{ $json.week_start }}",
+            "total_issues": "=\t{{ $json.total_issues }}",
+            "by_type_json": "=\t{{ JSON.stringify($json.by_type) }}",
+            "by_author_json": "={{ JSON.stringify($json.by_author) }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "week_start",
+              "displayName": "week_start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "total_issues",
+              "displayName": "total_issues",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "by_type_json",
+              "displayName": "by_type_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "by_author_json",
+              "displayName": "by_author_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1136,
+        224
+      ],
+      "id": "27d3c2bb-63b3-4b40-bd86-ddbe0c494985",
+      "name": "Upsert row(s)"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "CJkWQJcG3wEBKXXv",
+          "mode": "list",
+          "cachedResultName": "weekly_issue_stats",
+          "cachedResultUrl": "/projects/KIYEEocueP0pxQTY/datatables/CJkWQJcG3wEBKXXv"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "week_start",
+              "keyValue": "={{ DateTime.fromISO($json.week_start).minus({ weeks: 1 }).toISODate() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1136,
+        400
+      ],
+      "id": "558dac13-0ef0-4050-a231-0724fcaa8004",
+      "name": "Get row(s)",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const current = $('Group weekly issues').first().json;\nconst previous = $input.first().json;\nconst hasPrevious = Boolean(previous.week_start);\n\nconst previousByType = hasPrevious\n  ? JSON.parse(previous.by_type_json)\n  : {};\n\nconst deltaByType = hasPrevious\n  ? Object.fromEntries(\n      Object.entries(current.by_type).map(([type, count]) => [\n        type, count - (previousByType[type] ?? 0)\n      ])\n    )\n  : null;\n\nreturn [{\n  json: {\n    ...current,\n    previous_week_start: previous.week_start ?? null,\n    delta_total: hasPrevious ? current.total_issues - previous.total_issues : null,\n    delta_by_type: deltaByType\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        400
+      ],
+      "id": "f49ee9b4-ca2b-463c-a887-17f3abbdad64",
+      "name": "Compare weeks"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Напиши 2 коротких предложения по-русски для недельного отчёта.\nУкажи общее изменение и категорию с самым заметным изменением, если оно есть.\nОпирайся только на переданные цифры. Не придумывай причины.\nЕсли общая разница равна null, скажи, что данных для сравнения пока нет.\nВерни обычный текст без заголовка и Markdown.\n\nВсего обращений за неделю: {{ $json.total_issues }}\nПо типам: {{ JSON.stringify($json.by_type) }}\nОбщее изменение: {{ $json.delta_total }}\nИзменение по типам: {{ JSON.stringify($json.delta_by_type) }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1584,
+        400
+      ],
+      "id": "63a13032-822a-430b-99fb-f8e23fd543c2",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-5.2",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-5.2"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1520,
+        608
+      ],
+      "id": "267d4167-4697-4e0e-aa14-8ec98b3449df",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Xc1ziHzydn29ShmL",
+          "name": "OpenAI account 55"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Group weekly issues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Group weekly issues": {
+      "main": [
+        [
+          {
+            "node": "Upsert row(s)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build weekly email": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert row(s)": {
+      "main": [
+        []
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Compare weeks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compare weeks": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Build weekly email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ac3d1ea9-c40b-4d5b-aac3-164e08835d79",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "68dbbb4e8fa686c3fd4e9982ade6836edb66976f207553e7ac22df961581c78c"
+  },
+  "nodeGroups": [],
+  "id": "EhTWk0dUi3Tj7qUz",
+  "tags": []
+}
