@@ -1,0 +1,23 @@
+✖ ошибка API сохраняет выбор и допускает повторную попытку (5755.1285ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6210.325708
+
+✖ failing tests:
+
+test at test/menu.test.cjs:138:1
+✖ ошибка API сохраняет выбор и допускает повторную попытку (5755.1285ms)
+  locator.waitFor: Timeout 5000ms exceeded.
+  Call log:
+  [2m  - waiting for getByText('Не удалось собрать меню', { exact: true }) to be visible[22m
+  
+      at /Users/kamilasalyakhova/Documents/ChatGPT/вайбкод 7.2/practice-08-menu/test/menu.test.cjs:149:68
+      at async withPage (/Users/kamilasalyakhova/Documents/ChatGPT/вайбкод 7.2/practice-08-menu/test/menu.test.cjs:29:9) {
+    name: 'TimeoutError',
+    log: [ "  - waiting for getByText('Не удалось собрать меню', { exact: true }) to be visible" ]
+  }
