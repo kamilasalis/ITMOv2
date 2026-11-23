@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Что готовим? · Макет</title>
+<style>
+:root {
+  color-scheme: light;
+  --ink:#20221c; --muted:#4c5145; --paper:#fff5c7; --green:#204fea;
+  --deep:#1739ab; --line:#deddd0; --lime:#ffdc63; --selected:#e3ebff;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+*,*::before,*::after { box-sizing:border-box; }
+body { margin:0; background:var(--paper); color:var(--ink); }
+button,input { font:inherit; }
+button { cursor:pointer; }
+button:disabled { cursor:wait; }
+:focus-visible { outline:3px solid #9b3c20; outline-offset:4px; }
+[hidden] { display:none !important; }
+header { position:absolute; z-index:4; inset:16px 0 auto; padding-inline:clamp(12px,4vw,48px); }
+.bar,.layout { max-width:1160px; margin-inline:auto; }
+.bar { display:flex; justify-content:space-between; align-items:center; gap:8px; min-height:52px; padding:6px 16px 6px 8px; border-radius:999px; background:white; }
+.brand { display:flex; align-items:center; gap:8px; font-weight:850; letter-spacing:-.03em; }
+.mark { flex:none; background:var(--lime); color:var(--ink); display:grid; place-items:center; width:36px; height:36px; border-radius:50%; }
+.summary { font-size:.8rem; color:var(--muted); text-align:right; }
+.hero { position:relative; isolation:isolate; overflow:hidden; min-height:100svh; padding:110px clamp(20px,7vw,96px) 90px; display:grid; align-items:end; background:#492c21; }
+.hero video,.hero::before { position:absolute; inset:0; width:100%; height:100%; z-index:-2; }
+.hero video { object-fit:cover; object-position:center 52%; }
+.hero::before { content:""; z-index:-1; background:linear-gradient(0deg,#19100dee 1%,#19100daa 32%,#19100d24 74%); }
+.hero h1,.hero p { color:#fff; }
+.hero h1 { margin:0 0 16px; font-size:clamp(3rem,10vw,9.25rem); font-weight:950; line-height:.86; letter-spacing:-.075em; text-transform:uppercase; }
+.hero p { margin:0; max-width:34ch; font-size:clamp(1rem,2vw,1.38rem); line-height:1.4; }
+.hero-action { display:inline-flex; margin-top:24px; padding:13px 22px; border-radius:999px; color:white; text-decoration:none; background:var(--green); font-weight:800; }
+.video-toggle { position:absolute; bottom:16px; right:clamp(16px,4vw,48px); padding:8px 12px; border:1px solid #ffffff80; border-radius:999px; background:#21130fe8; color:white; font-size:.85rem; }
+.hero :focus-visible { outline-color:white; }
+.tile:hover,.chip:hover { border-color:var(--green); }
+.recipe { border:1px solid var(--line); }
+.recipe h3 { color:var(--green); }
+.panel h2,.recipe h3 { font-weight:850; }
+.layout { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); align-items:start; gap:22px; padding:clamp(16px,4vw,44px); }
+.form, .panel { border-radius:26px; overflow:hidden; }
+.form { background:#fff; border:1px solid var(--line); padding:24px; }
+fieldset { border:0; padding:0; margin:0; min-inline-size:0; }
+fieldset + fieldset { border-top:1px solid var(--line); margin-top:23px; padding-top:22px; }
+legend { padding:0; float:left; width:100%; margin-bottom:12px; font-size:1.18rem; font-weight:800; letter-spacing:-.03em; }
+.grid { clear:both; display:grid; gap:8px; }
+.meals { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.goals { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.tile { position:relative; display:grid; justify-items:start; align-content:start; gap:6px; padding:11px 8px; border:1px solid var(--line); background:#fdf8f3; border-radius:14px; font-size:.91rem; font-weight:650; cursor:pointer; }
+.tile:has(input:checked),.chip:has(input:checked) { border-color:var(--green); background:var(--selected); }
+.tile:has(input:focus-visible),.chip:has(input:focus-visible) { outline:3px solid #9b3c20; outline-offset:2px; }
+.tile input,.chip input { position:absolute; width:1px; height:1px; opacity:0; }
+.tile input:checked + .symbol::after { content:"✓"; position:absolute; top:7px; right:7px; font-size:.8rem; font-weight:850; color:var(--green); }
+.symbol { font-size:1.35rem; line-height:1.45; }
+.search { clear:both; display:grid; gap:6px; margin-bottom:10px; color:var(--muted); font-size:.87rem; font-weight:600; }
+.search input { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fdf8f3; color:var(--ink); font-size:1rem; }
+.chips { display:flex; flex-wrap:wrap; gap:7px; }
+.chip { position:relative; border:1px solid var(--line); border-radius:999px; display:inline-flex; gap:6px; align-items:center; padding:6px 9px; font-size:.88rem; cursor:pointer; }
+.chip input:checked + span::after { content:" ✓"; color:var(--green); font-weight:800; }
+.goal-label { font-weight:770; }
+.goal-note { font-size:.82rem; line-height:1.2; color:var(--muted); font-weight:500; }
+.small { color:var(--muted); line-height:1.4; font-size:.875rem; margin:10px 0 0; }
+.error { color:#972919; font-weight:650; line-height:1.4; margin:12px 0 0; }
+.submit { width:100%; margin-top:22px; padding:14px; background:var(--green); color:#fff; border:0; border-radius:999px; font-weight:800; }
+.submit:hover { background:var(--deep); }
+.submit:disabled { opacity:.7; }
+.panel { min-height:438px; background:#dff3d1; color:var(--ink); padding:24px; }
+.panel h2 { margin:0 0 14px; font-size:1.55rem; letter-spacing:-.045em; }
+.panel :focus-visible { outline-color:var(--green); }
+.menu-status { min-height:330px; display:grid; place-content:center; justify-items:center; text-align:center; gap:12px; }
+.menu-status p { max-width:25ch; margin:0; color:var(--muted); line-height:1.45; }
+.menu-status strong { font-size:1.2rem; }
+.plate { display:grid; place-items:center; color:var(--ink); font-size:3rem; width:126px; height:126px; border-radius:50%; border:9px solid #edc5a6; box-shadow:0 0 0 1px #e5b895, 0 0 0 16px #ffffff38; background:var(--lime); margin:10px 0; }
+.spinning { display:inline-block; animation:pulse .8s ease-in-out infinite alternate; }
+@keyframes pulse { to { opacity:.45; transform:scale(.93); } }
+.recipe { background:#fffaf5; color:var(--ink); padding:14px; margin-top:10px; border-radius:14px; }
+.recipe h3 { font-size:1rem; margin:0 0 9px; }
+.recipe ul { padding:0; margin:0; list-style:none; display:grid; gap:8px; }
+.recipe li { display:grid; gap:2px; padding-bottom:7px; border-bottom:1px solid var(--line); }
+.recipe li:last-child { padding-bottom:0; border:0; }
+.recipe span { font-size:.875rem; color:var(--muted); }
+.recipe details { margin-top:8px; font-size:.875rem; }
+.recipe summary { cursor:pointer; font-weight:650; }
+.recipe p { margin:4px 0; }
+.retry { background:var(--lime); border:0; border-radius:10px; padding:9px 14px; color:var(--deep); font-weight:750; }
+@media (max-width:800px) {
+  .layout { grid-template-columns:1fr; }
+  .panel { min-height:0; }
+  .menu-status { min-height:245px; }
+}
+@media (max-width:420px) {
+  .summary { max-width:13ch; }
+  .form,.panel { padding:16px; }
+  .meals { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .tile { padding:8px; }
+}
+@media (prefers-reduced-motion:reduce) { .spinning { animation:none; } }
+html { scroll-snap-type:y proximity; }
+.hero,.chapter,.recipe { scroll-snap-align:start; }
+.layout { display:block; max-width:none; margin:0; padding:0; }
+.form { padding:0; border:0; border-radius:0; overflow:visible; }
+.chapter,fieldset.chapter + fieldset { min-height:100svh; margin:0; border:0; padding:clamp(26px,7vw,96px); }
+.chapter-meals { background:#fff1a8; }
+.chapter-foods { background:#e3ecff; }
+.chapter-portions { background:#ddecce; }
+.chapter legend { float:left; margin:0 0 24px; font-size:clamp(2.1rem,7vw,5rem); line-height:1; font-weight:950; letter-spacing:-.055em; }
+.chapter-content { clear:both; max-width:1000px; padding-top:12px; }
+.chapter .tile { padding:clamp(10px,2.5vw,26px); border:2px solid transparent; border-radius:22px; background:#fffef8; }
+.chapter .tile:has(input:checked) { border-color:var(--green); background:var(--selected); }
+.chapter .symbol { font-size:clamp(1.75rem,4.5vw,3.5rem); }
+.chapter .chip { background:white; padding:8px 13px; }
+.chapter .chip:has(input:checked) { background:#c2d4ff; border-color:var(--green); }
+.chapter .search { max-width:540px; }
+.chapter-next { display:inline-flex; margin-top:24px; padding:12px 19px; border-radius:999px; background:white; color:var(--deep); text-decoration:none; font-weight:800; }
+.chapter .submit { width:auto; padding-inline:32px; }
+.panel { padding:0; border-radius:0; min-height:100svh; background:#edf5e7; overflow:visible; }
+.panel h2,#status { margin:0; padding:20px clamp(20px,7vw,96px) 0; }
+#status:has(.menu-status) { padding-bottom:30px; }
+.recipe { min-height:100svh; display:grid; align-items:center; margin:0; padding:clamp(18px,7vw,96px); border:0; border-radius:0; background:#fff4c9; }
+.recipe:nth-child(2n) { background:#e2ebff; }
+.recipe:nth-child(3n) { background:#ffdfd2; }
+.recipe-inner { width:min(100%,850px); background:#fffefb; padding:clamp(18px,4vw,50px); border-radius:26px; }
+.recipe h3 { margin-bottom:26px; color:var(--deep); font-size:clamp(2rem,6vw,4.5rem); line-height:1; }
+.recipe li { padding:12px 0; gap:6px; }
+.recipe li strong { font-size:clamp(1.2rem,3vw,2rem); }
+.recipe details { margin:0; }
+@media(max-width:420px) { .goals { grid-template-columns:1fr; } }
+/* The plate rolls with the scroll position while the controls stay in place. */
+:root { --green:#823513; --deep:#462214; --selected:#ffe1a1; }
+.chapter { position:relative; overflow:clip; }
+.chapter legend,.chapter-content,.recipe-inner,.plate-finale h2 { position:relative; z-index:3; }
+.chapter legend { max-width:12ch; text-transform:uppercase; }
+.chapter-meals { color:#fff3ce; background:#823513; }
+.chapter-foods { color:#402011; background:#ffbc4b; }
+.chapter-portions { color:#fff3ce; background:#592514; }
+.chapter .tile,.chapter .chip { color:#402011; }
+.chapter-portions .small { color:#fff3ce; }
+.chapter .error { color:#74250b; background:#fff0cf; border-radius:8px; padding:8px 12px; width:fit-content; }
+.chapter-entered legend { animation:chapter-title .55s .16s both; }
+@keyframes chapter-title { from { opacity:.25; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+.food-groups { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; max-width:860px; }
+.food-group { padding:clamp(12px,2vw,22px); background:#fff5d7; border-radius:18px; }
+.food-label { display:inline-flex; align-items:center; gap:7px; }
+.food-art { display:inline-block; flex:none; width:36px; height:36px; border-radius:9px; background:#fff5d7 url(food-illustrations.png) var(--icon-x) var(--icon-y) / 500% 400% no-repeat; }
+.food-group h2 { margin:0 0 10px; font-size:clamp(1rem,2vw,1.4rem); }
+@media(max-width:670px) { .food-groups { grid-template-columns:1fr; } }
+@media(prefers-reduced-motion:reduce) { .chapter-entered legend { animation:none; } }
+.journey-plate { position:fixed; z-index:2; pointer-events:none; top:var(--plate-y,25vh); left:var(--plate-x,86vw); width:clamp(130px,26vw,360px); aspect-ratio:1; transform:translate(-50%,-50%); opacity:1; }
+.plate-face { position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle,#fff8e9 0 54%,#d8a98b 55%,#fff0d6 58% 67%,transparent 68%),repeating-conic-gradient(#fff0d6 0deg 12deg,#d4542e 12deg 19deg,#fff0d6 19deg 30deg); box-shadow:0 20px 48px #28100666,inset 0 0 19px #77372292; transform:rotate(var(--plate-turn,0deg)); }
+.plate-steam { position:absolute; inset:-23% 24% auto; height:58%; display:flex; justify-content:space-around; opacity:var(--plate-steam,0); transition:opacity .35s; }
+.plate-steam i { display:block; width:20%; height:100%; border-left:clamp(3px,1vw,8px) solid #fff9eb; border-radius:50%; filter:blur(1px); animation:steam-rise 2.8s infinite ease-out; }
+.plate-steam i:nth-child(2) { animation-delay:-.9s; }
+.plate-steam i:nth-child(3) { animation-delay:-1.8s; }
+@keyframes steam-rise { 0% { transform:translateY(24%) scale(.65); opacity:.0; } 35% { opacity:.85; } 100% { transform:translateY(-40%) scale(1.25); opacity:0; } }
+.plate-finale { min-height:100svh; scroll-snap-align:start; display:grid; align-content:center; justify-items:center; gap:42px; padding:24px; text-align:center; background:#823513; color:#fff3ce; }
+#plate-dock { width:clamp(130px,26vw,360px); aspect-ratio:1; }
+.plate-finale h2 { margin:0; font-size:clamp(2rem,7vw,5rem); line-height:1; font-weight:950; }
+.recipe-missing { width:fit-content; margin:0; padding:6px 10px; border-radius:10px; color:#51220d; background:#ffe2ad; }
+@media(prefers-reduced-motion:reduce) { .plate-steam { transition:none; } .plate-steam i { animation:none; } }
+.chapter .meal-tile {
+  min-height:clamp(132px,19vw,230px);
+  align-content:end;
+  color:#fff;
+  font-size:clamp(1.05rem,2.2vw,1.55rem);
+  isolation:isolate;
+  border:2px solid transparent;
+  background:var(--sky);
+  text-shadow:0 2px 7px #25172d;
+}
+.chapter .meal-tile:has(input:checked) { background:var(--sky); border-color:#fff8db; box-shadow:0 0 0 3px #5f291a; }
+.meal-tick { display:none; position:absolute; right:10px; top:10px; width:26px; height:26px; border-radius:50%; background:#fff9ea; color:#572519; text-shadow:none; font-size:1rem; text-align:center; line-height:26px; }
+.meal-tile input:checked ~ .meal-tick { display:block; }
+.meal-breakfast { --sky:linear-gradient(0deg,#482650e6 0%,transparent 57%), radial-gradient(circle at 66% 58%,#fff2af 0 12%,#ffd890 13%,transparent 34%),linear-gradient(150deg,#966fbd,#f699a5 57%,#ffc879); }
+.meal-lunch { --sky:linear-gradient(0deg,#174172eb 0%,transparent 56%),radial-gradient(circle at 68% 26%,#fff8bd 0 13%,#fff0a071 14% 22%,transparent 39%),linear-gradient(145deg,#3a92eb,#92dbfa); }
+.meal-snack { --sky:linear-gradient(0deg,#52274aef 0%,transparent 57%),radial-gradient(circle at 67% 65%,#ffe499 0 14%,transparent 15%),linear-gradient(148deg,#8b4e90,#ef7c76 57%,#ffbc70); }
+.meal-dinner { --sky:linear-gradient(0deg,#14162df5 0%,transparent 60%),radial-gradient(circle at 69% 27%,#fff2c8 0 9%,transparent 10%),radial-gradient(circle at 27% 29%,#fff6ce 0 1%,transparent 2%),radial-gradient(circle at 52% 19%,#fff6ce 0 1%,transparent 2%),radial-gradient(circle at 80% 48%,#fff6ce 0 1%,transparent 2%),linear-gradient(145deg,#202448,#454776 72%,#724368); }
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <div class="brand"><span class="mark" aria-hidden="true">✳</span> Что готовим?</div>
+  <div class="summary" id="summary" aria-live="polite"></div>
+</div></header>
+<main>
+  <div class="hero">
+    <video id="hero-video" muted loop playsinline preload="metadata" aria-hidden="true">
+      <source src="eggs.mp4" type="video/mp4">
+    </video>
+    <button class="video-toggle" type="button" id="video-toggle" hidden>Включить фон</button>
+    <div>
+      <h1>Что готовим?</h1>
+      <p>Собери меню на день из продуктов, которые хочешь использовать.</p>
+      <a class="hero-action" href="#meal-step">Собрать меню</a>
+    </div>
+  </div>
+  <div class="layout">
+    <form class="form" id="planner" novalidate>
+      <fieldset class="chapter chapter-meals" id="meal-step" aria-describedby="meal-error">
+        <legend>Какие приёмы пищи готовим?</legend>
+        <div class="chapter-content">
+        <div class="grid meals" id="meals"></div>
+        <p class="error" id="meal-error" role="alert" hidden>Выбери хотя бы один приём пищи.</p>
+        <a class="chapter-next" href="#food-step">К продуктам</a>
+        </div>
+      </fieldset>
+      <fieldset class="chapter chapter-foods" id="food-step" aria-describedby="food-error">
+        <legend>Продукты</legend>
+        <div class="chapter-content">
+        <label class="search" for="search">Найти продукт
+          <input id="search" type="search" placeholder="Например, помидоры" autocomplete="off">
+        </label>
+        <div class="food-groups" id="foods"></div>
+        <p class="small" id="no-foods" role="status" hidden>По такому запросу продуктов нет.</p>
+        <p class="error" id="food-error" role="alert" hidden>Выбери хотя бы один продукт.</p>
+        <a class="chapter-next" href="#portion-step">К размеру порций</a>
+        </div>
+      </fieldset>
+      <fieldset class="chapter chapter-portions" id="portion-step">
+        <legend>Режим порций</legend>
+        <div class="chapter-content">
+        <div class="grid goals" id="goals"></div>
+        <p class="small">Режим меняет размер порций относительно стандартной порции рецепта.</p>
+        <button type="submit" class="submit" id="submit">Готовить</button>
+        </div>
+      </fieldset>
+    </form>
+    <section class="panel" id="menu-results" aria-labelledby="result-title" hidden>
+      <h2 id="result-title">Твоё меню</h2>
+      <div id="status" aria-live="polite"></div>
+      <div id="result"></div>
+    </section>
+  </div>
+  <section class="plate-finale" id="plate-finale" hidden>
+    <div id="plate-dock" aria-hidden="true"></div>
+    <h2>Приятного аппетита!</h2>
+  </section>
+</main>
+<div class="journey-plate" aria-hidden="true">
+  <div class="plate-face"></div>
+  <div class="plate-steam"><i></i><i></i><i></i></div>
+</div>
+<script>
+const mealOptions = [
+  ["breakfast", "Завтрак"], ["lunch", "Обед"],
+  ["snack", "Полдник"], ["dinner", "Ужин"],
+];
+const foodOptions = [
+  ["eggs", "Яйца", "🥚"], ["chicken", "Курица", "🍗"], ["salmon", "Лосось", "🐟"],
+  ["rice", "Рис", "🍚"], ["pasta", "Паста", "🍝"], ["oats", "Овсянка", "🥣"],
+  ["bread", "Хлеб", "🍞"], ["tomato", "Помидоры", "🍅"], ["cucumber", "Огурцы", "🥒"],
+  ["carrot", "Морковь", "🥕"], ["spinach", "Шпинат", "🥬"], ["potato", "Картофель", "🥔"],
+  ["yogurt", "Йогурт", "🥛"], ["apple", "Яблоки", "🍎"], ["banana", "Бананы", "🍌"],
+  ["avocado", "Авокадо", "🥑"], ["oil", "Оливковое масло", "🫒"],
+  ["cheese", "Сыр", "🧀"], ["cottage", "Творог", "🥣"], ["berries", "Ягоды", "🫐"],
+];
+const foodGroups = [
+  ["Белки", ["eggs","chicken","salmon","yogurt","cottage","cheese"]],
+  ["Клетчатка", ["tomato","cucumber","carrot","spinach","apple","banana","berries"]],
+  ["Углеводы", ["rice","pasta","oats","bread","potato"]],
+  ["Жиры", ["avocado","oil"]],
+];
+const goals = [
+  ["less", "Дефицит", "Лёгкая порция", .85],
+  ["standard", "Норма", "Стандартная порция", 1],
+  ["more", "Профицит", "Увеличенная порция", 1.15],
+];
+const recipes = [
+  ["breakfast", "Тост с авокадо", 8, [["bread", 70], ["avocado", 90]], "Подрумянь хлеб и выложи сверху размятый авокадо."],
+  ["dinner", "Салат из помидоров и авокадо", 10, [["tomato", 150], ["avocado", 100], ["oil", 10]], "Нарежь помидоры и авокадо, перемешай и заправь маслом."],
+
+  ["breakfast", "Омлет с помидорами", 12, [["eggs", 100], ["tomato", 100]], "Взбей яйца. Прогрей нарезанные помидоры на сковороде, залей яйцами и готовь до схватывания."],
+  ["breakfast", "Овсянка с бананом", 10, [["oats", 60], ["banana", 100]], "Свари овсянку на воде. Добавь нарезанный банан в готовую кашу."],
+  ["breakfast", "Гренки с яйцом и сыром", 12, [["bread", 70], ["eggs", 100], ["cheese", 30]], "Обмакни хлеб во взбитое яйцо, подрумянь с обеих сторон и добавь сыр."],
+  ["lunch", "Курица с рисом и морковью", 30, [["chicken", 150], ["rice", 70], ["carrot", 70]], "Свари рис. Приготовь курицу до полной готовности и смешай с тушёной морковью."],
+  ["lunch", "Паста с помидорами и сыром", 20, [["pasta", 85], ["tomato", 150], ["cheese", 35]], "Отвари пасту. Потуши помидоры, смешай их с пастой и посыпь сыром."],
+  ["lunch", "Картофель с курицей", 40, [["potato", 210], ["chicken", 150]], "Нарежь картофель и запеки с курицей до полной готовности."],
+  ["snack", "Йогурт с яблоком", 5, [["yogurt", 150], ["apple", 110]], "Нарежь яблоко и смешай с йогуртом."],
+  ["snack", "Творог с ягодами", 5, [["cottage", 160], ["berries", 80]], "Разомни творог ложкой и добавь ягоды."],
+  ["snack", "Яблоко с сыром", 5, [["apple", 130], ["cheese", 35]], "Нарежь яблоко и сыр и подай вместе."],
+  ["dinner", "Салат с курицей и огурцом", 25, [["chicken", 130], ["cucumber", 120], ["spinach", 50]], "Приготовь курицу до полной готовности и добавь кусочки к нарезанному огурцу и шпинату."],
+  ["dinner", "Лосось со шпинатом и рисом", 25, [["salmon", 150], ["spinach", 60], ["rice", 60]], "Приготовь лосось и свари рис. Прогрей шпинат и подай всё вместе."],
+  ["dinner", "Тёплый салат с яйцом", 15, [["eggs", 100], ["cucumber", 100], ["tomato", 130]], "Отвари яйца, нарежь овощи и смешай их с тёплыми яйцами."],
+];
+
+const heroVideo = document.querySelector("#hero-video");
+const videoToggle = document.querySelector("#video-toggle");
+heroVideo.muted = true;
+heroVideo.addEventListener("loadeddata", () => { videoToggle.hidden = false; });
+heroVideo.addEventListener("play", () => { videoToggle.textContent = "Пауза видео"; });
+heroVideo.addEventListener("pause", () => { videoToggle.textContent = "Включить фон"; });
+videoToggle.addEventListener("click", () => {
+  if (heroVideo.paused) heroVideo.play().catch(() => {});
+  else heroVideo.pause();
+});
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  heroVideo.play().catch(() => {});
+}
+
+const form = document.querySelector("#planner");
+const submit = document.querySelector("#submit");
+const search = document.querySelector("#search");
+const status = document.querySelector("#status");
+const result = document.querySelector("#result");
+const resultsPanel = document.querySelector("#menu-results");
+const finale = document.querySelector("#plate-finale");
+const selected = name => Array.from(form.querySelectorAll(`[name="${name}"]:checked`), input => input.value);
+const mealLabels = Object.fromEntries(mealOptions.map(([key, label]) => [key, label]));
+const foodLabels = Object.fromEntries(foodOptions.map(([key, label]) => [key, label]));
+let pending = false;
+let previewFailure = new URLSearchParams(location.search).get("preview") === "error";
+
+document.querySelector("#meals").innerHTML = mealOptions.map(([key, label]) =>
+  `<label class="tile meal-tile meal-${key}"><input type="checkbox" name="meal" value="${key}"><span>${label}</span><span class="meal-tick" aria-hidden="true">✓</span></label>`
+).join("");
+const foodsByKey = new Map(foodOptions.map(([key, label], index) => [key, {
+  label,
+  iconX: (index % 5) * 25,
+  iconY: Math.floor(index / 5) * (100 / 3)
+}]));
+document.querySelector("#foods").innerHTML = foodGroups.map(([group, keys]) =>
+  `<section class="food-group"><h2>${group}</h2><div class="chips">${keys.map(key => {
+    const { label, iconX, iconY } = foodsByKey.get(key);
+    return `<label class="chip" data-label="${label.toLowerCase()}"><input type="checkbox" name="food" value="${key}"><span class="food-label"><span class="food-art" aria-hidden="true" style="--icon-x:${iconX}%;--icon-y:${iconY}%"></span>${label}</span></label>`;
+  }).join("")}</div></section>`
+).join("");
+document.querySelector("#goals").innerHTML = goals.map(([key, label, note]) =>
+  `<label class="tile"><input type="radio" name="goal" value="${key}" ${key === "standard" ? "checked" : ""}><span class="goal-label">${label}</span><span class="goal-note">${note}</span></label>`
+).join("");
+
+function updateSummary() {
+  document.querySelector("#summary").textContent =
+    `Приёмы пищи: ${selected("meal").length} из 4 · Продукты: ${selected("food").length}`;
+}
+
+function showStatus(icon, title, message, retry = false) {
+  result.innerHTML = "";
+  finale.hidden = true;
+  status.innerHTML = `<div class="menu-status"><span class="plate" aria-hidden="true">${icon}</span><strong>${title}</strong><p>${message}</p>${retry ? '<button class="retry" type="button">Повторить</button>' : ""}</div>`;
+  status.querySelector(".retry")?.addEventListener("click", () => form.requestSubmit());
+}
+
+function matchMenus(meals, foods) {
+  const groups = meals.map(meal => {
+    const candidates = recipes.filter(([category]) => category === meal).map(recipe => ({
+      recipe, missing: recipe[3].filter(([key]) => !foods.includes(key)).map(([key]) => foodLabels[key])
+    }));
+    const exact = candidates.filter(entry => entry.missing.length === 0);
+    return exact.length ? exact : candidates.sort((left, right) => left.missing.length - right.missing.length);
+  });
+  return groups.reduce((menus, group) => menus.flatMap(menu =>
+    group.map(entry => [...menu, entry])
+  ).sort((left, right) => missingCount(left) - missingCount(right)).slice(0, 3), [[]]);
+}
+
+function missingCount(menu) {
+  return menu.reduce((sum, entry) => sum + entry.missing.length, 0);
+}
+
+function showMenus(menus, multiplier) {
+  status.textContent = missingCount(menus[0])
+    ? "Готовых совпадений нет. Вот ближайшие варианты с недостающими продуктами."
+    : `Вариантов меню: ${menus.length}`;
+  finale.hidden = false;
+  renderPlate();
+  result.innerHTML = menus.map((menu, index) => `<article class="recipe">
+    <div class="recipe-inner"><h3>Меню ${index + 1} из ${menus.length}</h3>
+    <ul>${menu.map(({recipe: [meal, title, time, ingredients, method], missing}) => `<li>
+      <span>${mealLabels[meal]} · ${time} мин</span><strong>${title}</strong>
+      ${missing.length ? `<p class="recipe-missing"><b>Нужно добавить:</b> ${missing.join(", ")}</p>` : ""}
+      <details><summary>Состав и приготовление</summary>
+        <p>${ingredients.map(([key, grams]) => `${foodLabels[key]} — ${Math.round(grams * multiplier)} г`).join(", ")}.</p>
+        <p>${method}</p>
+      </details>
+    </li>`).join("")}</ul></div></article>`).join("");
+}
+
+search.addEventListener("input", () => {
+  const term = search.value.trim().toLowerCase();
+  const chips = Array.from(document.querySelectorAll(".chip"));
+  for (const chip of chips) chip.hidden = !chip.dataset.label.includes(term);
+  document.querySelector("#no-foods").hidden = chips.some(chip => !chip.hidden);
+  for (const group of document.querySelectorAll(".food-group")) {
+    group.hidden = !group.querySelector(".chip:not([hidden])");
+  }
+});
+
+form.addEventListener("change", event => {
+  if (event.target.name === "meal") document.querySelector("#meal-error").hidden = selected("meal").length > 0;
+  if (event.target.name === "food") document.querySelector("#food-error").hidden = selected("food").length > 0;
+  updateSummary();
+});
+
+form.addEventListener("submit", async event => {
+  event.preventDefault();
+  if (pending) return;
+
+  const meals = selected("meal");
+  const foods = selected("food");
+  const goal = goals.find(([key]) => key === selected("goal")[0]);
+  document.querySelector("#meal-error").hidden = meals.length > 0;
+  document.querySelector("#food-error").hidden = foods.length > 0;
+  if (!meals.length || !foods.length) {
+    form.querySelector(!meals.length ? '[name="meal"]' : "#search").focus();
+    return;
+  }
+
+  pending = true;
+  submit.disabled = true;
+  submit.textContent = "Подбираем меню…";
+  resultsPanel.hidden = false;
+  resultsPanel.scrollIntoView();
+  showStatus('<span class="spinning">🍽️</span>', "Подбираем блюда", "Это займёт пару секунд.");
+  await new Promise(resolve => setTimeout(resolve, 450));
+  try {
+    if (previewFailure) {
+      previewFailure = false;
+      throw new Error("Prototype error state");
+    }
+
+    showMenus(matchMenus(meals, foods), goal[3]);
+  } catch {
+    showStatus("🍳", "Не удалось собрать меню", "Твои продукты и настройки сохранены. Попробуй ещё раз.", true);
+    status.querySelector(".retry").focus();
+  } finally {
+    pending = false;
+    submit.disabled = false;
+    submit.textContent = "Готовить";
+  }
+});
+
+const animatedChapters = Array.from(document.querySelectorAll(".chapter"));
+const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const journeyPlate = document.querySelector(".journey-plate");
+const plateDock = document.querySelector("#plate-dock");
+const chapterObserver = new IntersectionObserver(entries => {
+  for (const entry of entries) {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("chapter-entered");
+      chapterObserver.unobserve(entry.target);
+    }
+  }
+}, { threshold:.18 });
+animatedChapters.forEach(chapter => chapterObserver.observe(chapter));
+
+let animationFrame = 0;
+function renderPlate() {
+  animationFrame = 0;
+  const docking = !finale.hidden;
+  const dock = plateDock.getBoundingClientRect();
+  const settle = docking ? Math.max(0, Math.min(1, 1 - finale.getBoundingClientRect().top / (innerHeight * .85))) : 0;
+  const startX = innerWidth * .86;
+  const progress = Math.min(1, scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight));
+  const startY = innerHeight * (.25 + progress * .5);
+  const x = startX + (dock.left + dock.width / 2 - startX) * settle;
+  const y = startY + (dock.top + dock.height / 2 - startY) * settle;
+  journeyPlate.style.setProperty("--plate-x", `${x}px`);
+  journeyPlate.style.setProperty("--plate-y", `${y}px`);
+  journeyPlate.style.setProperty("--plate-turn", `${reducedMotion.matches ? 0 : scrollY * .24 * (1 - settle)}deg`);
+  journeyPlate.style.setProperty("--plate-steam", settle > .85 ? 1 : 0);
+}
+addEventListener("scroll", () => {
+  if (!animationFrame) animationFrame = requestAnimationFrame(renderPlate);
+}, { passive:true });
+addEventListener("resize", renderPlate);
+reducedMotion.addEventListener("change", renderPlate);
+renderPlate();
+
+updateSummary();
+showStatus("🥗", "Из продуктов — в меню", "Выбери приёмы пищи и продукты, чтобы получить варианты блюд.");
+</script>
+</body>
+</html>
